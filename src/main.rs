@@ -1,5 +1,5 @@
 use std::io::{self, stdout};
-use std::process::{Command, Stdio};
+use std::process::Command;
 
 use ratatui::{
     backend::CrosstermBackend,
@@ -8,12 +8,8 @@ use ratatui::{
         terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
         ExecutableCommand,
     },
-    layout::{Flex, Rect},
-    prelude::{Constraint, Layout},
     style::{Modifier, Style},
-    text::Text,
-    widgets::{Block, List, ListItem, ListState, Paragraph},
-    Frame, Terminal,
+    widgets::{Block, List, ListItem, ListState}, Terminal,
 };
 
 fn main() -> io::Result<()> {
@@ -41,13 +37,13 @@ fn main() -> io::Result<()> {
 
     let mut should_quit = false;
     while !should_quit {
-        terminal.draw(|f| f.render_stateful_widget(&list, f.size(), &mut state));
+        let _ = terminal.draw(|f| f.render_stateful_widget(&list, f.area(), &mut state));
         should_quit = handle_events(&mut state, &mut ssh)?;
     }
 
     disable_raw_mode()?;
     stdout().execute(LeaveAlternateScreen)?;
-    if (ssh != "") {
+    if ssh != "" {
         let mut command = Command::new("ssh");
         command.arg(ssh);
         terminal.show_cursor()?;
@@ -86,22 +82,4 @@ fn handle_events(state: &mut ListState, ssh: &mut &str) -> io::Result<bool> {
         }
     }
     Ok(false)
-}
-
-fn center(area: Rect, horizontal: Constraint, vertical: Constraint) -> Rect {
-    let [area] = Layout::horizontal([horizontal])
-        .flex(Flex::Center)
-        .areas(area);
-    let [area] = Layout::vertical([vertical]).flex(Flex::Center).areas(area);
-    area
-}
-
-fn ui(frame: &mut Frame) {
-    // let text = Text::raw("Hello world!");
-    // let area = center(
-    //     frame.area(),
-    //     Constraint::Length(text.width() as u16),
-    //     Constraint::Length(1),
-    // );
-    // frame.render_widget(text, area);
 }
