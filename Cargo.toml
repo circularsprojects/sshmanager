@@ -4,4 +4,6 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+config-file = "0.2.3"
 ratatui = "0.28.1"
+serde = "1.0.209"
